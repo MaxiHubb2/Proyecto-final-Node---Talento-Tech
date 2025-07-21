@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 API Tester - Proyecto Final</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            animation: fadeIn 0.5s ease-in;
+            position: relative;
+            z-index: 1;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1em;
+        }
+        
+        h2 {
+            color: #4a5568;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            position: sticky;
+            top: 0;
+            background: white;
+            z-index: 10;
+            margin-top: 0;
+        }
+        
+        .auth-status {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .endpoint-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .endpoint {
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+        
+        .endpoint:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+            border-color: #667eea;
+            z-index: 1;
+        }
+        
+        .method {
+            padding: 15px 20px;
+            font-weight: bold;
+            color: white;
+            font-size: 1.1em;
+        }
+        
+        .get { background: linear-gradient(45deg, #48bb78, #38a169); }
+        .post { background: linear-gradient(45deg, #4299e1, #3182ce); }
+        .put { background: linear-gradient(45deg, #ed8936, #dd6b20); }
+        .delete { background: linear-gradient(45deg, #f56565, #e53e3e); }
+        
+        .endpoint-body {
+            padding: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        
+        textarea, input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            transition: border-color 0.3s ease;
+            resize: vertical;
+        }
+        
+        textarea:focus, input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        textarea { 
+            height: 100px; 
+            font-size: 13px;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 5px 5px 5px 0;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(45deg, #f56565, #e53e3e);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #48bb78, #38a169);
+        }
+        
+        .response {
+            background: #1a202c;
+            color: #e2e8f0;
+            border: 1px solid #2d3748;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            max-height: 300px;
+            overflow-y: auto;
+            display: none;
+        }
+        
+        .response.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from { opacity: 0; max-height: 0; }
+            to { opacity: 1; max-height: 300px; }
+        }
+        
+        .status-200, .status-201 { border-left: 4px solid #48bb78; }
+        .status-400, .status-401 { border-left: 4px solid #ed8936; }
+        .status-404, .status-500 { border-left: 4px solid #f56565; }
+        
+        .products-list {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .product-card {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .product-card:hover {
+            transform: translateX(2px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4299e1;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); }
+            to { transform: translateX(0); }
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            margin-right: 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .endpoint-grid {
+                grid-template-columns: 1fr;
+            }
+            .two-column {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 API Tester</h1>
+    <p class="subtitle">Proyecto Final - Node.js con JWT</p>
+    
+    <div class="container">
+        <div id="authStatus" class="auth-status">
+            <div id="tokenInfo">
+                <strong>🔓 No autenticado</strong><br>
+                <small>Haz login para acceder a operaciones protegidas</small>
+            </div>
+        </div>
+        
+        <h2>🔐 Autenticación JWT</h2>
+        
+        <div class="endpoint-grid">
+            <div class="endpoint">
+                <div class="method post">POST /api/auth/login</div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Credenciales (JSON):</label>
+                        <textarea id="loginData">{"email": "admin@test.com", "password": "123456"}</textarea>
+                    </div>
+                    <button class="btn" onclick="testLogin()">🔑 Iniciar Sesión</button>
+                    <div id="loginResponse" class="response"></div>
+                </div>
+            </div>
+
+            <div class="endpoint">
+                <div class="method post">POST /api/auth/register</div>
+                <div class="endpoint-body">
+                    <div class="form-group">
+                        <label>Datos del usuario (JSON):</label>
+                        <textarea id="registerData">{"email": "nuevo@test.com", "password": "123456", "name": "Usuario Nuevo"}</textarea>
+                    </div>
+                    <button class="btn" onclick="testRegister()">📝 Registrarse</button>
+                    <div id="registerResponse" class="response"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="quick-actions">
+            <button class="btn btn-success" onclick="verifyToken()">✅ Verificar Token</button>
+            <button class="btn btn-danger" onclick="clearToken()">🗑️ Cerrar Sesión</button>
+        </div>
+        <div id="verifyResponse" class="response"></div>
+    </div>
+
+    <div class="container">
+        <h2>📦 Gestión de Productos</h2>
+        <p><strong>ℹ️ Nota:</strong> Las operaciones de creación, actualización y eliminación requieren autenticación como admin</p>
+        
+        <div class="two-column">
+            <div>
+                <h3>📋 Ver Productos</h3>
+                <div class="endpoint">
+                    <div class="method get">GET /api/products</div>
+                    <div class="endpoint-body">
+                        <button class="btn" onclick="getAllProducts()">📋 Listar Todos</button>
+                        <div id="getAllResponse" class="response"></div>
+                    </div>
+                </div>
+
+                <div class="endpoint">
+                    <div class="method get">GET /api/products/:id</div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>ID del producto:</label>
+                            <input type="text" id="searchProductId" placeholder="Ingresa el ID del producto" />
+                        </div>
+                        <button class="btn" onclick="getProductById()">🔍 Buscar por ID</button>
+                        <div id="getByIdResponse" class="response"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3>➕ Crear Producto (Admin)</h3>
+                <div class="endpoint">
+                    <div class="method post">POST /api/products/create</div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>Datos del producto (JSON):</label>
+                            <textarea id="createData">{"name": "Producto Nuevo", "price": 99.99, "description": "Descripción del producto"}</textarea>
+                        </div>
+                        <button class="btn" onclick="createProduct()">➕ Crear Producto</button>
+                        <div id="createResponse" class="response"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="two-column">
+            <div>
+                <h3>✏️ Actualizar Producto (Admin)</h3>
+                <div class="endpoint">
+                    <div class="method put">PUT /api/products/:id</div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>ID del producto:</label>
+                            <input type="text" id="updateId" placeholder="ID del producto a actualizar" />
+                        </div>
+                        <div class="form-group">
+                            <label>Nuevos datos (JSON):</label>
+                            <textarea id="updateData">{"name": "Producto Actualizado", "price": 149.99, "description": "Nueva descripción"}</textarea>
+                        </div>
+                        <button class="btn" onclick="updateProduct()">✏️ Actualizar</button>
+                        <div id="updateResponse" class="response"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h3>🗑️ Eliminar Producto (Admin)</h3>
+                <div class="endpoint">
+                    <div class="method delete">DELETE /api/products/:id</div>
+                    <div class="endpoint-body">
+                        <div class="form-group">
+                            <label>ID del producto:</label>
+                            <input type="text" id="deleteId" placeholder="ID del producto a eliminar" />
+                        </div>
+                        <button class="btn btn-danger" onclick="deleteProduct()">🗑️ Eliminar</button>
+                        <div id="deleteResponse" class="response"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="productsList" class="products-list" style="display:none;">
+            <h3>📦 Lista de Productos</h3>
+            <div id="productsContainer"></div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000';
+        let currentToken = null;
+
+        // Funciones de utilidad
+        function showToast(message, type = 'info') {
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.style.background = type === 'success' ? '#48bb78' : type === 'error' ? '#f56565' : '#4299e1';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        function setLoading(elementId, isLoading) {
+            const button = document.querySelector(`button[onclick*="${elementId}"]`);
+            if (button) {
+                if (isLoading) {
+                    button.innerHTML = '<div class="spinner"></div>' + button.textContent;
+                    button.classList.add('loading');
+                } else {
+                    button.innerHTML = button.textContent.replace(/^.*?([🔑📝✅🗑️📋🔍➕✏️])/, '$1');
+                    button.classList.remove('loading');
+                }
+            }
+        }
+
+        async function makeRequest(url, method = 'GET', data = null, requiresAuth = false) {
+            try {
+                const options = {
+                    method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+
+                if (requiresAuth && currentToken) {
+                    options.headers['Authorization'] = `Bearer ${currentToken}`;
+                }
+
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+
+                const response = await fetch(API_BASE + url, options);
+                const result = await response.json();
+                
+                return {
+                    status: response.status,
+                    data: result
+                };
+            } catch (error) {
+                return {
+                    status: 0,
+                    data: { error: 'Error de conexión: ' + error.message }
+                };
+            }
+        }
+
+        function showResponse(elementId, status, data) {
+            const element = document.getElementById(elementId);
+            element.classList.add('show');
+            element.className = `response show status-${status}`;
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        function updateAuthStatus() {
+            const authStatus = document.getElementById('tokenInfo');
+            if (currentToken) {
+                try {
+                    const tokenPayload = JSON.parse(atob(currentToken.split('.')[1]));
+                    authStatus.innerHTML = `
+                        <strong>🔒 Autenticado como: ${tokenPayload.email}</strong><br>
+                        <small>Rol: ${tokenPayload.role} | Expira: ${new Date(tokenPayload.exp * 1000).toLocaleString()}</small>
+                    `;
+                } catch (e) {
+                    authStatus.innerHTML = `
+                        <strong>🔑 Token JWT guardado</strong><br>
+                        <small>Token válido para operaciones protegidas</small>
+                    `;
+                }
+            } else {
+                authStatus.innerHTML = `
+                    <strong>🔓 No autenticado</strong><br>
+                    <small>Haz login para acceder a operaciones protegidas</small>
+                `;
+            }
+        }
+
+        function displayProducts(products) {
+            const container = document.getElementById('productsContainer');
+            const productsList = document.getElementById('productsList');
+            
+            if (!products || products.length === 0) {
+                container.innerHTML = '<p>No hay productos disponibles</p>';
+                productsList.style.display = 'block';
+                return;
+            }
+
+            container.innerHTML = products.map(product => `
+                <div class="product-card">
+                    <h4>${product.name}</h4>
+                    <p><strong>Precio:</strong> $${product.price}</p>
+                    <p><strong>Descripción:</strong> ${product.description || 'Sin descripción'}</p>
+                    <div style="display: flex; align-items: center; gap: 10px; margin: 10px 0;">
+                        <span><strong>ID:</strong></span>
+                        <span class="product-id" style="background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold;">#${product.id}</span>
+                        <button class="btn btn-success" style="padding: 5px 10px; font-size: 12px;" onclick="copyToClipboard('${product.id}')">📋</button>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="btn" onclick="fillProductId('${product.id}')">🔍 Ver Detalles</button>
+                        <button class="btn" onclick="fillUpdateForm('${product.id.replace(/'/g, "\\'")}', '${product.name.replace(/'/g, "\\'")}', ${product.price})">✏️ Editar</button>
+                        <button class="btn btn-danger" onclick="fillDeleteId('${product.id}')">🗑️ Eliminar</button>
+                    </div>
+                </div>
+            `).join('');
+            
+            productsList.style.display = 'block';
+        }
+
+        function fillProductId(id) {
+            document.getElementById('searchProductId').value = id;
+            showToast('ID copiado al campo de búsqueda', 'success');
+            
+            // Scroll al formulario de búsqueda
+            document.querySelector('.endpoint .method.get').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+
+        function fillUpdateForm(id, name, price) {
+            document.getElementById('updateId').value = id;
+            document.getElementById('updateData').value = JSON.stringify({
+                name: name,
+                price: price,
+                description: "Descripción actualizada"
+            }, null, 2);
+            showToast('Datos copiados al formulario de actualización', 'success');
+            
+            // Scroll al formulario de actualización
+            document.querySelector('.endpoint .method.put').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+
+        function fillDeleteId(id) {
+            document.getElementById('deleteId').value = id;
+            showToast('ID copiado al campo de eliminación', 'success');
+            
+            // Scroll al formulario de eliminación
+            document.querySelector('.endpoint .method.delete').scrollIntoView({ 
+                behavior: 'smooth', 
+                block: 'center' 
+            });
+        }
+
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast('ID copiado al portapapeles', 'success');
+            } catch (err) {
+                // Fallback para navegadores que no soportan clipboard API
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showToast('ID copiado al portapapeles', 'success');
+            }
+        }
+
+        // Funciones de API
+        async function testLogin() {
+            setLoading('testLogin', true);
+            try {
+                const data = JSON.parse(document.getElementById('loginData').value);
+                const response = await makeRequest('/api/auth/login', 'POST', data);
+                showResponse('loginResponse', response.status, response.data);
+                
+                if (response.status === 200 && response.data.token) {
+                    currentToken = response.data.token;
+                    updateAuthStatus();
+                    showToast('¡Login exitoso! Token JWT guardado.', 'success');
+                }
+            } catch (e) {
+                showToast('Error: JSON inválido', 'error');
+            }
+            setLoading('testLogin', false);
+        }
+
+        async function testRegister() {
+            setLoading('testRegister', true);
+            try {
+                const data = JSON.parse(document.getElementById('registerData').value);
+                const response = await makeRequest('/api/auth/register', 'POST', data);
+                showResponse('registerResponse', response.status, response.data);
+                
+                if (response.status === 201 && response.data.token) {
+                    currentToken = response.data.token;
+                    updateAuthStatus();
+                    showToast('¡Registro exitoso! Token JWT guardado.', 'success');
+                }
+            } catch (e) {
+                showToast('Error: JSON inválido', 'error');
+            }
+            setLoading('testRegister', false);
+        }
+
+        async function verifyToken() {
+            if (!currentToken) {
+                showToast('No hay token para verificar. Haz login primero.', 'error');
+                return;
+            }
+            
+            setLoading('verifyToken', true);
+            const response = await makeRequest('/api/auth/verify', 'POST', null, true);
+            showResponse('verifyResponse', response.status, response.data);
+            setLoading('verifyToken', false);
+        }
+
+        async function getAllProducts() {
+            setLoading('getAllProducts', true);
+            const response = await makeRequest('/api/products');
+            showResponse('getAllResponse', response.status, response.data);
+            
+            if (response.status === 200 && response.data.success) {
+                displayProducts(response.data.data);
+            }
+            setLoading('getAllProducts', false);
+        }
+
+        async function createProduct() {
+            if (!currentToken) {
+                showToast('Debes estar autenticado para crear productos', 'error');
+                return;
+            }
+            
+            setLoading('createProduct', true);
+            try {
+                const data = JSON.parse(document.getElementById('createData').value);
+                const response = await makeRequest('/api/products/create', 'POST', data, true);
+                showResponse('createResponse', response.status, response.data);
+                
+                if (response.status === 201) {
+                    showToast('¡Producto creado exitosamente!', 'success');
+                    // Actualizar lista de productos
+                    setTimeout(getAllProducts, 1000);
+                }
+            } catch (e) {
+                showToast('Error: JSON inválido', 'error');
+            }
+            setLoading('createProduct', false);
+        }
+
+        async function getProductById() {
+            const id = document.getElementById('searchProductId').value;
+            if (!id) {
+                showToast('Por favor ingresa un ID', 'error');
+                return;
+            }
+            
+            setLoading('getProductById', true);
+            const response = await makeRequest(`/api/products/${id}`);
+            showResponse('getByIdResponse', response.status, response.data);
+            setLoading('getProductById', false);
+        }
+
+        async function updateProduct() {
+            if (!currentToken) {
+                showToast('Debes estar autenticado para actualizar productos', 'error');
+                return;
+            }
+            
+            const id = document.getElementById('updateId').value;
+            if (!id) {
+                showToast('Por favor ingresa un ID', 'error');
+                return;
+            }
+            
+            setLoading('updateProduct', true);
+            try {
+                const data = JSON.parse(document.getElementById('updateData').value);
+                const response = await makeRequest(`/api/products/${id}`, 'PUT', data, true);
+                showResponse('updateResponse', response.status, response.data);
+                
+                if (response.status === 200) {
+                    showToast('¡Producto actualizado exitosamente!', 'success');
+                    // Actualizar lista de productos
+                    setTimeout(getAllProducts, 1000);
+                }
+            } catch (e) {
+                showToast('Error: JSON inválido', 'error');
+            }
+            setLoading('updateProduct', false);
+        }
+
+        async function deleteProduct() {
+            if (!currentToken) {
+                showToast('Debes estar autenticado para eliminar productos', 'error');
+                return;
+            }
+            
+            const id = document.getElementById('deleteId').value;
+            if (!id) {
+                showToast('Por favor ingresa un ID', 'error');
+                return;
+            }
+            
+            if (!confirm('¿Estás seguro de eliminar este producto?')) {
+                return;
+            }
+            
+            setLoading('deleteProduct', true);
+            const response = await makeRequest(`/api/products/${id}`, 'DELETE', null, true);
+            showResponse('deleteResponse', response.status, response.data);
+            
+            if (response.status === 200) {
+                showToast('¡Producto eliminado exitosamente!', 'success');
+                // Actualizar lista de productos
+                setTimeout(getAllProducts, 1000);
+            }
+            setLoading('deleteProduct', false);
+        }
+
+        function clearToken() {
+            currentToken = null;
+            updateAuthStatus();
+            showToast('Sesión cerrada correctamente', 'success');
+        }
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            updateAuthStatus();
+            // NO cargar productos automáticamente, solo cuando el usuario haga clic
+        });
+    </script>
+</body>
+</html>
