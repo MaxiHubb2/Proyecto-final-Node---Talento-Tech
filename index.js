@@ -20,6 +20,9 @@ app.use(cors({
 // Configurar body-parser para interpretar JSON
 app.use(bodyParser.json());
 
+// Servir archivos estáticos
+app.use(express.static('.'));
+
 // Ruta básica
 app.get('/', (req, res) => {
   res.json({ 
