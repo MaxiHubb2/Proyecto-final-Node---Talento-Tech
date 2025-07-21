@@ -24,6 +24,8 @@ app.use(bodyParser.json());
 app.get('/', (req, res) => {
   res.json({ 
     message: 'API funcionando con estructura MVC',
+    environment: process.env.NODE_ENV || 'development',
+    firebaseConfigured: !!(process.env.FIREBASE_PROJECT_ID),
     availableEndpoints: [
       'GET /api/products - Obtener todos los productos',
       'GET /api/products/:id - Obtener producto por ID',
@@ -31,7 +33,7 @@ app.get('/', (req, res) => {
       'PUT /api/products/:id - Actualizar producto',
       'DELETE /api/products/:id - Eliminar producto',
       'POST /api/auth/login - Iniciar sesión',
-      'POST /api/auth/register - Registrarse'
+      'POST /api/auth/register - Registrar usuario'
     ]
   });
 });
@@ -48,9 +50,12 @@ app.use((req, res) => {
   });
 });
 
-// Iniciar servidor
-app.listen(PORT, () => {
-  console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
-});
+// Para desarrollo local
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(PORT, () => {
+    console.log(`Servidor ejecutándose en http://localhost:${PORT}`);
+  });
+}
 
+// Para Vercel
 export default app;
