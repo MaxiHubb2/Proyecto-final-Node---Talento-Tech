@@ -2,6 +2,8 @@ import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import fs from 'fs';
+import path from 'path';
 
 import productRoutes from './src/routes/productRoutes.js';
 import authRoutes from './src/routes/authRoutes.js';
@@ -39,6 +41,18 @@ app.get('/', (req, res) => {
       'POST /api/auth/register - Registrar usuario'
     ]
   });
+});
+
+// Ruta para servir la interfaz HTML
+app.get('/test-api.html', (req, res) => {
+  try {
+    const htmlPath = path.join(process.cwd(), 'test-api.html');
+    const htmlContent = fs.readFileSync(htmlPath, 'utf8');
+    res.setHeader('Content-Type', 'text/html');
+    res.send(htmlContent);
+  } catch (error) {
+    res.status(404).json({ error: 'Archivo HTML no encontrado' });
+  }
 });
 
 // Configurar rutas
