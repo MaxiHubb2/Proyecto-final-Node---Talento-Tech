@@ -5,7 +5,7 @@ import {
   createProduct, 
   updateProduct, 
   deleteProduct 
-} from '../controllers/productController.js';
+} from '../controllers/ProductController.js';
 import { verifyToken, verifyAdmin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
