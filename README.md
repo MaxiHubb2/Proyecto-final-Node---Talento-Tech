@@ -18,7 +18,7 @@ npm start
 
 ### Opción 2: Cliente REST (Postman, Thunder Client, etc.)
 - URL base: `http://localhost:3000`
-- Documentación detallada disponible en `EXPLICACION-SIMPLE.md`
+- Documentación detallada disponible en `DOCUMENTATION.md`
 
 ## Credenciales de prueba
 - Email: `admin@test.com`
